@@ -21,6 +21,18 @@ var formSubmitHandler = function (event) {
     }
 };
 
+var buttonClickHandler = function(event) {
+    // get the language attribute from the clicked element
+    var language = event.target.getAttribute("data-language");
+    
+    if (language) {
+        getFeaturedRepos(language);
+
+        // clear old content
+        repoContainerEl.textContent = "";
+    }
+};
+
 var getUserRepos = function (user) {
     // format the github api url
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
@@ -45,6 +57,23 @@ var getUserRepos = function (user) {
         });
 };
 
+var getFeaturedRepos = function (language) {
+    // format the github api url
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+
+    // make a get request to url
+    fetch(apiUrl).then(function (response) {
+        if (response.ok) {
+            response.json().then(function (data) {
+                displayRepos(data.items, language);
+            });
+        }
+        else {
+            alert("Error: " + response.statusText);
+        }
+    });
+};
+
 var displayRepos = function (repos, searchTerm) {
     // check is api returned any repos
     if (repos.length === 0) {
@@ -61,7 +90,7 @@ var displayRepos = function (repos, searchTerm) {
         // format repo name
         var repoName = repos[i].owner.login + "/" + repos[i].name;
 
-        // create a container for each repo
+        // create a link for each repo
         var repoEl = document.createElement("a");
         repoEl.classList = "list-item flex-row justify-space-between align-center";
         repoEl.setAttribute("href", "./single-repo.html?repo=" + repoName);
@@ -93,31 +122,7 @@ var displayRepos = function (repos, searchTerm) {
     }
 };
 
-var getFeaturedRepos = function (language) {
-    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
 
-    fetch(apiUrl).then(function (response) {
-        if (response.ok) {
-            response.json().then(function (data) {
-                displayRepos(data.items, language);
-            });
-        }
-        else {
-            alert("Error: GitHub User Not Found");
-        }
-    });
-};
-
-var buttonClickHandler = function(event) {
-    var language = event.target.getAttribute("data-language");
-    
-    if (language) {
-        getFeaturedRepos(language);
-
-        // clear old content
-        repoContainerEl.textContent = "";
-    }
-}
 
 // add even listeners to forms and language search buttons
 userFormEl.addEventListener("submit", formSubmitHandler);

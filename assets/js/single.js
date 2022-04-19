@@ -2,7 +2,7 @@ var issueContainerEl = document.querySelector("#issues-container");
 var limitWarningEl = document.querySelector("#limit-warning");
 var repoNameEl = document.querySelector("#repo-name");
 
-var getRepoName = function (name) {
+var getRepoName = function () {
     // grab repo name from url query string
     var queryString = document.location.search;
     var repoName = queryString.split("=")[1];
@@ -10,6 +10,7 @@ var getRepoName = function (name) {
     if (repoName) {
         // display repo name on the page
         repoNameEl.textContent = repoName;
+
         getRepoIssues(repoName);
     }
     else {
@@ -19,7 +20,7 @@ var getRepoName = function (name) {
 };
 
 var getRepoIssues = function (repo) {
-    console.log(repo);
+    // format the github api url
     var apiUrl = "https://api.github.com/repos/" + repo + "/issues?direction=asc";
 
     // make a get request to url
@@ -50,6 +51,7 @@ var displayIssues = function (issues) {
         return;
     }
 
+    // loop over given issues
     for (var i = 0; i < issues.length; i++) {
         // create a link element to take users to the issue on github
         var issueEl = document.createElement("a");
@@ -78,6 +80,7 @@ var displayIssues = function (issues) {
         // append to container
         issueEl.appendChild(typeEl);
 
+        // append to the dom
         issueContainerEl.appendChild(issueEl);
     }
 };
@@ -87,7 +90,7 @@ var displayWarning = function (repo) {
     limitWarningEl.textContent = "To see more than 30 issues, visit ";
 
     var linkEl = document.createElement("a");
-    linkEl.textContent = "See More Issues on GitHub.com";
+    linkEl.textContent = "GitHub.com";
     linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
     linkEl.setAttribute("target", "_blank");
 
